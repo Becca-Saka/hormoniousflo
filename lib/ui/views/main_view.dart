@@ -6,7 +6,7 @@ import 'check_in_view.dart';
 import 'profile_calender_view.dart';
 
 class MainView extends StatefulWidget {
-  MainView({Key? key}) : super(key: key);
+  const MainView({Key? key}) : super(key: key);
 
   @override
   State<MainView> createState() => _MainViewState();

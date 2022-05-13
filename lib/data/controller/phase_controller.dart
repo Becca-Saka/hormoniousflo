@@ -185,18 +185,19 @@ class PhaseController extends ChangeNotifier {
     return startDates;
   }
 
-/// Load cycle data from local storage using [SharedPrefrenceService]
+  /// Load cycle data from local storage using [SharedPrefrenceService]
   Future<void> getPhaseEventsFromLocal() async {
-    kEvents.clear();
     final data = await _sharedPrefrenceService.getCycleDate();
-    phases = parseData(data);
-    for (var item in phases) {
-      final date = DateTime.parse(item.startDate!);
-      kEvents.addAll({
-        date: [item]
-      });
+    if (data != null) {
+      phases = parseData(data);
+      for (var item in phases) {
+        final date = DateTime.parse(item.startDate!);
+        kEvents.addAll({
+          date: [item]
+        });
+      }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   List<PhaseModel> parseData(dynamic response) {
