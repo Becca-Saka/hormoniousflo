@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hormoniousflo/data/models/phase_model.dart';
 import 'package:hormoniousflo/data/repository/phase_repository.dart';
 import 'package:hormoniousflo/data/services/notification_service.dart';
+import 'package:hormoniousflo/data/services/shared_preferences.dart';
 import 'package:hormoniousflo/ui/shared/const_colors.dart';
 import 'package:hormoniousflo/ui/shared/const_messages.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +24,8 @@ class PhaseController extends ChangeNotifier {
   CalendarFormat calenderFormat = CalendarFormat.month;
   DateTime? selectedDay;
   final PhaseRepositoy _phaseRepositoy = PhaseRepositoy();
+  final SharedPrefrenceService _sharedPrefrenceService =
+      SharedPrefrenceService();
   final kEvents = LinkedHashMap<DateTime, List<PhaseModel>>(
     equals: isSameDay,
   );
@@ -109,9 +112,7 @@ class PhaseController extends ChangeNotifier {
       final response = await _phaseRepositoy.getPhases(
           periodDate!, periodLength!, cycleLength!);
       if (response.isSuccessful) {
-        final responseList = response.data as List;
-        phases = responseList.map((e) => PhaseModel.fromJson(e)).toList();
-
+        phases = parseData(response.data);
         await getPhaseEvents();
 
         Navigator.pop(context);
@@ -135,7 +136,7 @@ class PhaseController extends ChangeNotifier {
     }
   }
 
-/// Adds phase events to the calendar
+  /// Adds phase events to the calendar and saves them to the local storage
   Future<void> getPhaseEvents() async {
     kEvents.clear();
     for (var item in phases) {
@@ -144,6 +145,8 @@ class PhaseController extends ChangeNotifier {
         date: [item]
       });
     }
+    final mappedData = phases.map((e) => e.toJson()).toList();
+    _sharedPrefrenceService.saveCycleDate(mappedData);
     notifyListeners();
   }
 
@@ -180,5 +183,24 @@ class PhaseController extends ChangeNotifier {
       }
     }
     return startDates;
+  }
+
+/// Load cycle data from local storage using [SharedPrefrenceService]
+  Future<void> getPhaseEventsFromLocal() async {
+    kEvents.clear();
+    final data = await _sharedPrefrenceService.getCycleDate();
+    phases = parseData(data);
+    for (var item in phases) {
+      final date = DateTime.parse(item.startDate!);
+      kEvents.addAll({
+        date: [item]
+      });
+    }
+    notifyListeners();
+  }
+
+  List<PhaseModel> parseData(dynamic response) {
+    final responseList = response as List;
+    return responseList.map((e) => PhaseModel.fromJson(e)).toList();
   }
 }

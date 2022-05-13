@@ -5,11 +5,22 @@ import 'package:provider/provider.dart';
 import 'check_in_view.dart';
 import 'profile_calender_view.dart';
 
+class MainView extends StatefulWidget {
+  MainView({Key? key}) : super(key: key);
 
-class MainView extends StatelessWidget {
-   MainView({ Key? key }) : super(key: key);
+  @override
+  State<MainView> createState() => _MainViewState();
+}
 
-   final List<Widget> screens = [
+class _MainViewState extends State<MainView> {
+  @override
+  void initState() {
+    Provider.of<PhaseController>(context, listen: false)
+        .getPhaseEventsFromLocal();
+    super.initState();
+  }
+
+  final List<Widget> screens = [
     const ProfileCalenderView(),
     Container(
       height: double.infinity,

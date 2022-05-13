@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 
 /// A class that handles all the http requests to the server
 class Api {
-  static const String _baseUrl = 'https://c518-129-18-209-14.ngrok.io/api';
+  static const String _baseUrl = 'https://hloappp.herokuapp.com/api';
 
   Map<String, String> headers = {'Content-Type': 'application/json'};
 

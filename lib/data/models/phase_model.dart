@@ -21,6 +21,14 @@ class PhaseModel {
       phaseColor: getPaseColor(json['phase']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'day': day,
+      'start_date': startDate,
+      'phase': phase,
+    };
+  }
   static Color getPaseColor(String pase) {
     switch (pase) {
       case 'Menstrual':
